@@ -3,11 +3,11 @@ with darwin.apple_sdk.frameworks;
 
 let wev = stdenv.mkDerivation {
   pname = "w08r-emacs-libvterm";
-  version = "ed6e867";
+  version = "a940dd2";
 
   src = fetchFromGitHub {
     sha256 = "sha256-egN9sRWxUN99ExmO8ZWhYV43x0U2EUlnFAElIP3BAlc=";
-    rev = "ed6e867cfab77c5a311a516d20af44f57526cfdc";
+    rev = "a940dd2ee8a82684860e320c0f6d5e15d31d916f";
     repo = "emacs-libvterm";
     owner = "akermu";
     fetchSubmodules = true;
@@ -42,16 +42,15 @@ let wev = stdenv.mkDerivation {
 
 wep = stdenv.mkDerivation {
   pname = "w08r-emacs-pdftools";
-  version = "c510442";
+  version = "ed1d4fc";
 
   src = fetchFromGitHub {
     sha256 = "sha256-jeBF5CRt36mpv/qVWegj7q1wL84vy9yEuS09c+xl458=";
-    rev = "c510442ab89c8a9e9881230eeb364f4663f59e76";
+    rev = "4e6c778194bea39d81871a3caa0b72539fdb6868";
     repo = "pdf-tools";
-    owner = "politza";
+    owner = "vedang";
     fetchSubmodules = true;
   };
-
 
   buildInputs = [
     cmake
@@ -85,15 +84,21 @@ wep = stdenv.mkDerivation {
 
 in stdenv.mkDerivation rec {
   pname = "w08r-emacs";
-  version = "ccba86b";
+  version = "cda372b";
 
   src = fetchFromSavannah {
-    rev = "ccba86be78586d4b16da288bcc6b3c473b9fd422";
+    rev = "cda372bfc237b1b3544b4968953b4b0532b32c88";
     repo = "emacs";
     sha256 = "sha256-G2VQPCTowtTpKZDhedJZn5Z/YJsHtxSQQNX6Eeekphc=";
   };
 
+  sitelisp = fetchurl {
+    url = "https://raw.githubusercontent.com/will08rien/emacs-nix/main/site-start.el";
+    sha256 = "5127047146c8393036d203b46aaa9844ca50f8b65e564bfc5dd7918a0f12a943";
+  };
+
   buildInputs = [
+    curl
     gettext
     libjpeg
     giflib
@@ -165,17 +170,16 @@ in stdenv.mkDerivation rec {
     mkdir $out/Applications
     cp -r nextstep/Emacs.app $out/Applications/
     cp -r src $out
+    mkdir -p $out/site-lisp
     runHook postInstall
   '';
 
   postInstall = ''
-    mkdir -p $out/site-lisp
-    cp ${./site-start.el} $out/site-lisp/site-start.el
+    cp $sitelisp $out/site-lisp/site-start.el
     cp ${lib.getLib wev}/lib/* $out/site-lisp/
-    cp ${lib.getLib wep}/bin/* $out/site-lisp/
-    cp ${lib.getLib wep}/lisp/* $out/site-lisp/
+    cp ${lib.getLib wep}/bin/* $out/bin/
     substituteInPlace $out/site-lisp/site-start.el --replace \
-        "(setq find-function-C-source-directory nil" \
-        "(setq find-function-C-source-directory \"$out/src\""
+        "(setq w08r-site-dir nil" \
+        "(setq w08r-site-dir \"$out\""
   '';
 }
