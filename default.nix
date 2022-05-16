@@ -6,8 +6,8 @@ let wev = stdenv.mkDerivation {
   version = "a940dd2";
 
   src = fetchFromGitHub {
-    sha256 = "sha256-uSzIDmRNk7u5VtCXYu+JVN7Gzkc65axCiK0Jq0X6MWQ=";
-    rev = "a940dd2ee8a82684860e320c0f6d5e15d31d916f";
+    sha256 = "sha256-A4ptIWzeF4oFzK8bptP1UxHNp296res20Ydt6vnUAmc=";
+    rev = "b44723552f86407d528c4a6c8057382c061b008e";
     repo = "emacs-libvterm";
     owner = "akermu";
     fetchSubmodules = true;
@@ -45,8 +45,8 @@ wep = stdenv.mkDerivation {
   version = "4e6c778";
 
   src = fetchFromGitHub {
-    sha256 = "sha256-hSI3aeopCCR7CvToLu/QLD+gtcqxmwoCoEgPBuJJxRw=";
-    rev = "4e6c778194bea39d81871a3caa0b72539fdb6868";
+    sha256 = "sha256-CKyj1cW01jG3e3pxSgzIOVvyLfS/OZ2x1Cr80uhA1I8=";
+    rev = "fedd930a09a497c03df3ce5204ccbd80da724662";
     repo = "pdf-tools";
     owner = "vedang";
     fetchSubmodules = true;
@@ -73,23 +73,23 @@ wep = stdenv.mkDerivation {
   '';
 
   buildPhase = ''
-    ( cd server && make )
+    ( cd server && PATH=$PATH:/usr/bin make )
   '';
 
   installPhase = ''
-    ( cd server && make install )
+    ( cd server && PATH=$PATH:/usr/bin make install )
     mkdir $out/lisp && cp lisp/*.el $out/lisp
   '';
 };
 
 in stdenv.mkDerivation rec {
   pname = "w08r-emacs";
-  version = "adf0029";
+  version = "b8cfe8f";
 
   src = fetchFromSavannah {
-    rev = "adf00298b60e87f76c64b1ba68c0424df55982e1";
+    rev = "b8cfe8fa754e3a3d197b785a179e0915ba4f53bf";
     repo = "emacs";
-    sha256 = "sha256-vle9bTCQp/YpXVp1sqq3W7Gd8m//FEpJ3tNW1JHJKxs=";
+    sha256 = "sha256-S4rGk6mwgK2aGO0beFJmDAIGckZnfWMCht8kdoKozCc=";
   };
 
   sitelisp = fetchurl {
@@ -118,7 +118,7 @@ in stdenv.mkDerivation rec {
     wev
   ];
 
-  macsdk = "/Library/Developer/CommandLineTools/SDKs/MacOSX12.1.sdk";
+  macsdk = "/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk";
   configurePhase = ''
     ./autogen.sh
 
@@ -162,10 +162,11 @@ in stdenv.mkDerivation rec {
     substituteInPlace lisp/emacs-lisp/comp.el --replace \
         "(defcustom native-comp-driver-options nil" \
         "(defcustom native-comp-driver-options '(${gccjitOpts})"
-    make -j8
+    PATH=$PATH:/usr/bin make -j8
   '';
 
   installPhase = ''
+    PATH=$PATH:/usr/bin
     make NATIVE_FULL_AOT=1 install
     mkdir $out/Applications
     cp -r nextstep/Emacs.app $out/Applications/
