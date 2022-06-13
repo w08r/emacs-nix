@@ -84,12 +84,12 @@ wep = stdenv.mkDerivation {
 
 in stdenv.mkDerivation rec {
   pname = "w08r-emacs";
-  version = "b8cfe8f";
+  version = "559c276";
 
   src = fetchFromSavannah {
-    rev = "b8cfe8fa754e3a3d197b785a179e0915ba4f53bf";
+    rev = "559c276942e4b2d47244802cfb31fb79e61f9a7f";
     repo = "emacs";
-    sha256 = "sha256-S4rGk6mwgK2aGO0beFJmDAIGckZnfWMCht8kdoKozCc=";
+    sha256 = "sha256-CpbV2FQ3MGfcLhczGCj1VGVgGi2tNXxZhnfnbqS0Wxw=";
   };
 
   sitelisp = fetchurl {
