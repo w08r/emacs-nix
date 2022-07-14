@@ -10,7 +10,7 @@ Started building a nix derivation to be able to always build from
 master, also include compilation of vterm and pdftools as they seemed
 fiddly to build outside the nix build context.
 
-To use this, just clone the repo, then runt the following:
+To use this, just clone the repo, then run the following:
 
 ```
 nix-env build default.nix
