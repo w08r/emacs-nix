@@ -22,8 +22,3 @@ This should leave an emacs build in `./result`.  If that seems good, then
 nix-env -f default.nix -i w08r-emacs
 rm result
 ```
-
-In order for the Application to work, currently there's some extra
-manual effort involved which I need to fix.  Create a symlink called
-native-lisp from the Contents directory to the same directory under
-lib/emacs/...
