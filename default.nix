@@ -3,11 +3,11 @@ with darwin.apple_sdk.frameworks;
 
 let wev = stdenv.mkDerivation {
   pname = "w08r-emacs-libvterm";
-  version = "a940dd2";
+  version = "3155a47";
 
   src = fetchFromGitHub {
-    sha256 = "sha256-A4ptIWzeF4oFzK8bptP1UxHNp296res20Ydt6vnUAmc=";
-    rev = "b44723552f86407d528c4a6c8057382c061b008e";
+    sha256 = "sha256-WYeVsi0srRR8+eOFpNVmL1m+DeujgCEwmAnYMWA8cd4=";
+    rev = "3155a477b43c1567d754768f5be79296440ebaf8";
     repo = "emacs-libvterm";
     owner = "akermu";
     fetchSubmodules = true;
@@ -42,11 +42,11 @@ let wev = stdenv.mkDerivation {
 
 wep = stdenv.mkDerivation {
   pname = "w08r-emacs-pdftools";
-  version = "4e6c778";
+  version = "fe42da6";
 
   src = fetchFromGitHub {
-    sha256 = "sha256-CKyj1cW01jG3e3pxSgzIOVvyLfS/OZ2x1Cr80uhA1I8=";
-    rev = "fedd930a09a497c03df3ce5204ccbd80da724662";
+    sha256 = "sha256-gIm1ea6ZRJyACBRtoQ0OBIsN5Yc1WYkujHUusMANgcA=";
+    rev = "fe42da60ad68e806af1677210249caccd7b99451";
     repo = "pdf-tools";
     owner = "vedang";
     fetchSubmodules = true;
@@ -84,12 +84,12 @@ wep = stdenv.mkDerivation {
 
 in stdenv.mkDerivation rec {
   pname = "w08r-emacs";
-  version = "559c276";
+  version = "63e1b42f5b";
 
   src = fetchFromSavannah {
-    rev = "559c276942e4b2d47244802cfb31fb79e61f9a7f";
+    rev = "63e1b42f5b69d9a7346921b4c1998d7a3a8ae223";
     repo = "emacs";
-    sha256 = "sha256-CpbV2FQ3MGfcLhczGCj1VGVgGi2tNXxZhnfnbqS0Wxw=";
+    sha256 = "sha256-2GtxiZfXSyo7Lx3iTgZ3QiIu0Azxdu457bD73PX7Sb0=";
   };
 
   sitelisp = fetchurl {
@@ -122,27 +122,7 @@ in stdenv.mkDerivation rec {
   configurePhase = ''
     ./autogen.sh
 
-    CPPFLAGS="-I${macsdk}/usr/include  -isysroot ${macsdk}/ -I${macsdk}//System/Library/Frameworks/AppKit.framework/Versions/C/Headers -I${pkgs.lib.getLib libgccjit}/include" \
-    CFLAGS="-O3 -isysroot ${macsdk}/ -framework AppKit" \
-    CC=/usr/bin/clang \
-    LDFLAGS="-O3 -L ${pkgs.lib.getLib libgccjit}/lib" \
-    ./configure \
-     --disable-silent-rules \
-     --prefix=$out \
-     --enable-locallisppath=$out/site-lisp \
-     --without-dbus \
-     --without-imagemagick \
-     --with-mailutils \
-     --disable-ns-self-contained \
-     --with-cairo \
-     --with-modules \
-     --with-xml2 \
-     --with-gnutls \
-     --with-json \
-     --with-rsvg \
-     --with-native-compilation \
-     --with-gnutls=ifavailable \
-     --enable-mac-app=$out/Applications
+    CPPFLAGS="-I${macsdk}/usr/include  -isysroot ${macsdk}/ -I${macsdk}//System/Library/Frameworks/AppKit.framework/Versions/C/Headers -I${pkgs.lib.getLib libgccjit}/include"     CFLAGS="-O3 -isysroot ${macsdk}/ -framework AppKit"     CC=/usr/bin/clang     LDFLAGS="-O3 -L ${pkgs.lib.getLib libgccjit}/lib"     ./configure      --disable-silent-rules      --prefix=$out      --enable-locallisppath=$out/site-lisp      --without-dbus      --without-imagemagick      --with-mailutils      --disable-ns-self-contained      --with-cairo      --with-modules      --with-xml2      --with-gnutls      --with-json      --with-rsvg      --with-native-compilation      --with-gnutls=ifavailable      --enable-mac-app=$out/Applications
   '';
 
   gccjitOpts =   (lib.concatStringsSep " "
@@ -159,9 +139,7 @@ in stdenv.mkDerivation rec {
         ]));
         
   buildPhase = ''
-    substituteInPlace lisp/emacs-lisp/comp.el --replace \
-        "(defcustom native-comp-driver-options nil" \
-        "(defcustom native-comp-driver-options '(${gccjitOpts})"
+    substituteInPlace lisp/emacs-lisp/comp.el --replace         "(defcustom native-comp-driver-options nil"         "(defcustom native-comp-driver-options '(${gccjitOpts})"
     PATH=$PATH:/usr/bin make -j8
   '';
 
@@ -179,8 +157,6 @@ in stdenv.mkDerivation rec {
     cp $sitelisp $out/site-lisp/site-start.el
     cp ${lib.getLib wev}/lib/* $out/site-lisp/
     cp ${lib.getLib wep}/bin/* $out/bin/
-    substituteInPlace $out/site-lisp/site-start.el --replace \
-        "(setq w08r-site-dir nil" \
-        "(setq w08r-site-dir \"$out\""
+    substituteInPlace $out/site-lisp/site-start.el --replace         "(setq w08r-site-dir nil"         "(setq w08r-site-dir \"$out\""
   '';
 }
