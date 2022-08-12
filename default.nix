@@ -42,11 +42,11 @@ let wev = stdenv.mkDerivation {
 
 wep = stdenv.mkDerivation {
   pname = "w08r-emacs-pdftools";
-  version = "fe42da6";
+  version = "bb0b71f";
 
   src = fetchFromGitHub {
-    sha256 = "sha256-gIm1ea6ZRJyACBRtoQ0OBIsN5Yc1WYkujHUusMANgcA=";
-    rev = "fe42da60ad68e806af1677210249caccd7b99451";
+    sha256 = "sha256-vL5l08RqPgcvLecBdV2xppUUX7aMU8/3RVYg3rWRysg=";
+    rev = "bb0b71f5bafd81d0b5647c4ec48fafa0bb6f6c21";
     repo = "pdf-tools";
     owner = "vedang";
     fetchSubmodules = true;
@@ -84,12 +84,12 @@ wep = stdenv.mkDerivation {
 
 in stdenv.mkDerivation rec {
   pname = "w08r-emacs";
-  version = "63e1b42f5b";
+  version = "9b661ff1a8";
 
   src = fetchFromSavannah {
-    rev = "63e1b42f5b69d9a7346921b4c1998d7a3a8ae223";
+    rev = "9b661ff1a8e0fc3fc809a42a187356d6cb5ad2c9";
     repo = "emacs";
-    sha256 = "sha256-2GtxiZfXSyo7Lx3iTgZ3QiIu0Azxdu457bD73PX7Sb0=";
+    sha256 = "sha256-JZwoE6exTjWZJB8akgAnkQg6AMbjQ0CGeo3NWwNbWqc=";
   };
 
   sitelisp = fetchurl {
