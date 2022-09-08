@@ -208,7 +208,7 @@ in stdenv.mkDerivation rec {
     cp \$sitelisp \$out/site-lisp/site-start.el
     cp \${lib.getLib wev}/lib/* \$out/site-lisp/
     cp \${lib.getLib wep}/bin/* \$out/bin/
-    ln -s $out/lib/emacs/29.0.50/native-lisp $out/Applications/Emacs.app/Contents
+    ln -s \$out/lib/emacs/29.0.50/native-lisp \$out/Applications/Emacs.app/Contents
     substituteInPlace \$out/site-lisp/site-start.el --replace \
         "(setq w08r-site-dir nil" \
         "(setq w08r-site-dir \"\$out\""

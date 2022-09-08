@@ -13,7 +13,7 @@ fiddly to build outside the nix build context.
 To use this, just clone the repo, then run the following:
 
 ```
-nix-env build default.nix
+nix-build default.nix
 ```
 
 This should leave an emacs build in `./result`.  If that seems good, then

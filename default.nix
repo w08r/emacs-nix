@@ -3,11 +3,11 @@ with darwin.apple_sdk.frameworks;
 
 let wev = stdenv.mkDerivation {
   pname = "w08r-emacs-libvterm";
-  version = "3155a47";
+  version = "d6fcd38";
 
   src = fetchFromGitHub {
-    sha256 = "sha256-WYeVsi0srRR8+eOFpNVmL1m+DeujgCEwmAnYMWA8cd4=";
-    rev = "3155a477b43c1567d754768f5be79296440ebaf8";
+    sha256 = "sha256-OGW7QkCF4Genr90nQl4v+pS6g2RhlTFN3NXYCGm62Yw=";
+    rev = "d6fcd38b9544dd4d05dbe5db10e950043b68de9c";
     repo = "emacs-libvterm";
     owner = "akermu";
     fetchSubmodules = true;
@@ -42,11 +42,11 @@ let wev = stdenv.mkDerivation {
 
 wep = stdenv.mkDerivation {
   pname = "w08r-emacs-pdftools";
-  version = "bb0b71f";
+  version = "1a0a30c";
 
   src = fetchFromGitHub {
-    sha256 = "sha256-vL5l08RqPgcvLecBdV2xppUUX7aMU8/3RVYg3rWRysg=";
-    rev = "bb0b71f5bafd81d0b5647c4ec48fafa0bb6f6c21";
+    sha256 = "sha256-OcRXVih4yDVZ6rW2HkJ9InPXs9u945mgAD3SG4tox78=";
+    rev = "1a0a30c54dc3effdba4781a2983115d4b6993260";
     repo = "pdf-tools";
     owner = "vedang";
     fetchSubmodules = true;
@@ -84,12 +84,12 @@ wep = stdenv.mkDerivation {
 
 in stdenv.mkDerivation rec {
   pname = "w08r-emacs";
-  version = "9b661ff1a8";
+  version = "e90a457c46";
 
   src = fetchFromSavannah {
-    rev = "9b661ff1a8e0fc3fc809a42a187356d6cb5ad2c9";
+    rev = "e90a457c46ca9463bf77cab2d34513c45269c938";
     repo = "emacs";
-    sha256 = "sha256-JZwoE6exTjWZJB8akgAnkQg6AMbjQ0CGeo3NWwNbWqc=";
+    sha256 = "sha256-FPmyprWa1vmYnL3mwHKFnKFJsBsVjanAR7a/gQDr6hs=";
   };
 
   sitelisp = fetchurl {
@@ -122,7 +122,7 @@ in stdenv.mkDerivation rec {
   configurePhase = ''
     ./autogen.sh
 
-    CPPFLAGS="-I${macsdk}/usr/include  -isysroot ${macsdk}/ -I${macsdk}//System/Library/Frameworks/AppKit.framework/Versions/C/Headers -I${pkgs.lib.getLib libgccjit}/include"     CFLAGS="-O3 -isysroot ${macsdk}/ -framework AppKit"     CC=/usr/bin/clang     LDFLAGS="-O3 -L ${pkgs.lib.getLib libgccjit}/lib"     ./configure      --disable-silent-rules      --prefix=$out      --enable-locallisppath=$out/site-lisp      --without-dbus      --without-imagemagick      --with-mailutils      --disable-ns-self-contained      --with-cairo      --with-modules      --with-xml2      --with-gnutls      --with-json      --with-rsvg      --with-native-compilation      --with-gnutls=ifavailable      --enable-mac-app=$out/Applications --with-xwidgets
+    CPPFLAGS="-I${macsdk}/usr/include  -isysroot ${macsdk}/ -I${macsdk}//System/Library/Frameworks/AppKit.framework/Versions/C/Headers -I${pkgs.lib.getLib libgccjit}/include"     CFLAGS="-O3 -isysroot ${macsdk}/ -framework AppKit"     CC=/usr/bin/clang     LDFLAGS="-O3 -L ${pkgs.lib.getLib libgccjit}/lib"     ./configure      --disable-silent-rules      --prefix=$out      --enable-locallisppath=$out/site-lisp      --without-dbus      --without-imagemagick      --with-mailutils      --disable-ns-self-contained      --with-cairo      --with-modules      --with-xml2      --with-gnutls      --with-json      --with-rsvg      --with-native-compilation      --with-gnutls=ifavailable      --enable-mac-app=$out/Applications      --with-xwidgets
   '';
 
   gccjitOpts =   (lib.concatStringsSep " "
