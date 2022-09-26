@@ -48,7 +48,7 @@ let wev = stdenv.mkDerivation {
     git
     libtool
     autoconf
-    pkgconfig
+    pkg-config
     zlib
   ];
 
@@ -92,7 +92,7 @@ wep = stdenv.mkDerivation {
     git
     libtool
     autoconf
-    pkgconfig
+    pkg-config
     zlib
   ];
 
@@ -122,7 +122,7 @@ in stdenv.mkDerivation rec {
 
   sitelisp = fetchurl {
     url = "https://raw.githubusercontent.com/will08rien/emacs-nix/main/site-start.el";
-    sha256 = "5127047146c8393036d203b46aaa9844ca50f8b65e564bfc5dd7918a0f12a943";
+    sha256 = "33117a61c0cae3388a1dac524580f19c1f65539e3313f51b293efce988964a0c";
   };
 
   buildInputs = [
@@ -137,7 +137,7 @@ in stdenv.mkDerivation rec {
     openssl
     libgccjit
     jansson
-    pkgconfig
+    pkg-config
     AppKit
     zlib
     ncurses
@@ -188,9 +188,6 @@ in stdenv.mkDerivation rec {
         ]));
         
   buildPhase = ''
-    substituteInPlace lisp/emacs-lisp/comp.el --replace \
-        "(defcustom native-comp-driver-options nil" \
-        "(defcustom native-comp-driver-options '(\${gccjitOpts})"
     PATH=\$PATH:/usr/bin make -j8
   '';
 
@@ -212,6 +209,9 @@ in stdenv.mkDerivation rec {
     substituteInPlace \$out/site-lisp/site-start.el --replace \
         "(setq w08r-site-dir nil" \
         "(setq w08r-site-dir \"\$out\""
+    substituteInPlace \$out/site-lisp/site-start.el --replace \
+        "(setq native-comp-driver-options nil" \
+        "(setq native-comp-driver-options '(\${gccjitOpts})"
   '';
 }
 EOF

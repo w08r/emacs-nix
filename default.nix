@@ -20,7 +20,7 @@ let wev = stdenv.mkDerivation {
     git
     libtool
     autoconf
-    pkgconfig
+    pkg-config
     zlib
   ];
 
@@ -64,7 +64,7 @@ wep = stdenv.mkDerivation {
     git
     libtool
     autoconf
-    pkgconfig
+    pkg-config
     zlib
   ];
 
@@ -84,17 +84,17 @@ wep = stdenv.mkDerivation {
 
 in stdenv.mkDerivation rec {
   pname = "w08r-emacs";
-  version = "e90a457c46";
+  version = "4c0fc12631";
 
   src = fetchFromSavannah {
-    rev = "e90a457c46ca9463bf77cab2d34513c45269c938";
+    rev = "4c0fc12631ba15ffa8e5e6ebc8673f26fdb48202";
     repo = "emacs";
-    sha256 = "sha256-FPmyprWa1vmYnL3mwHKFnKFJsBsVjanAR7a/gQDr6hs=";
+    sha256 = "sha256-GCdwIm++uvkaF35wACDPKtL8IUmiChjkklqnjRG1BMA=";
   };
 
   sitelisp = fetchurl {
     url = "https://raw.githubusercontent.com/will08rien/emacs-nix/main/site-start.el";
-    sha256 = "5127047146c8393036d203b46aaa9844ca50f8b65e564bfc5dd7918a0f12a943";
+    sha256 = "33117a61c0cae3388a1dac524580f19c1f65539e3313f51b293efce988964a0c";
   };
 
   buildInputs = [
@@ -109,7 +109,7 @@ in stdenv.mkDerivation rec {
     openssl
     libgccjit
     jansson
-    pkgconfig
+    pkg-config
     AppKit
     zlib
     ncurses
@@ -139,7 +139,6 @@ in stdenv.mkDerivation rec {
         ]));
         
   buildPhase = ''
-    substituteInPlace lisp/emacs-lisp/comp.el --replace         "(defcustom native-comp-driver-options nil"         "(defcustom native-comp-driver-options '(${gccjitOpts})"
     PATH=$PATH:/usr/bin make -j8
   '';
 
@@ -159,5 +158,6 @@ in stdenv.mkDerivation rec {
     cp ${lib.getLib wep}/bin/* $out/bin/
     ln -s $out/lib/emacs/29.0.50/native-lisp $out/Applications/Emacs.app/Contents
     substituteInPlace $out/site-lisp/site-start.el --replace         "(setq w08r-site-dir nil"         "(setq w08r-site-dir \"$out\""
+    substituteInPlace $out/site-lisp/site-start.el --replace         "(setq native-comp-driver-options nil"         "(setq native-comp-driver-options '(${gccjitOpts})"
   '';
 }
