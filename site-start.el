@@ -23,3 +23,6 @@
 
 ;; pdf-tools binaries
 (setq pdf-info-epdfinfo-program (concat w08r-site-dir "/bin/epdfinfo"))
+
+;; library path for gccjit
+(setq native-comp-driver-options nil)
