@@ -3,11 +3,11 @@ with darwin.apple_sdk.frameworks;
 
 let wev = stdenv.mkDerivation {
   pname = "w08r-emacs-libvterm";
-  version = "d6fcd38";
+  version = "f14d113";
 
   src = fetchFromGitHub {
-    sha256 = "sha256-OGW7QkCF4Genr90nQl4v+pS6g2RhlTFN3NXYCGm62Yw=";
-    rev = "d6fcd38b9544dd4d05dbe5db10e950043b68de9c";
+    sha256 = "sha256-dNW3eXgFgah7eIug+MqXTl59HfSbM5HLKwHdp1CAmyo=";
+    rev = "f14d113ee4618f052879509ec378feb9766b871b";
     repo = "emacs-libvterm";
     owner = "akermu";
     fetchSubmodules = true;
@@ -42,11 +42,11 @@ let wev = stdenv.mkDerivation {
 
 wep = stdenv.mkDerivation {
   pname = "w08r-emacs-pdftools";
-  version = "1a0a30c";
+  version = "b8079e4";
 
   src = fetchFromGitHub {
-    sha256 = "sha256-OcRXVih4yDVZ6rW2HkJ9InPXs9u945mgAD3SG4tox78=";
-    rev = "1a0a30c54dc3effdba4781a2983115d4b6993260";
+    sha256 = "sha256-l+Jd4WlpFkSF5ROjQHefRgDhmb8F5SysY0GzX5EA0/A=";
+    rev = "b8079e4ebc2936f9772657332d50936350a65825";
     repo = "pdf-tools";
     owner = "vedang";
     fetchSubmodules = true;
@@ -84,12 +84,12 @@ wep = stdenv.mkDerivation {
 
 in stdenv.mkDerivation rec {
   pname = "w08r-emacs";
-  version = "4c0fc12631";
+  version = "b5b6159d036";
 
   src = fetchFromSavannah {
-    rev = "4c0fc12631ba15ffa8e5e6ebc8673f26fdb48202";
+    rev = "b5b6159d036fd167c6cab21532c2fdd587051d28";
     repo = "emacs";
-    sha256 = "sha256-GCdwIm++uvkaF35wACDPKtL8IUmiChjkklqnjRG1BMA=";
+    sha256 = "sha256-BEe+MPMpwZCQzXJQ7vQrysV8ke3imSlMSYFdzpETW/I=";
   };
 
   sitelisp = fetchurl {
@@ -156,7 +156,7 @@ in stdenv.mkDerivation rec {
     cp $sitelisp $out/site-lisp/site-start.el
     cp ${lib.getLib wev}/lib/* $out/site-lisp/
     cp ${lib.getLib wep}/bin/* $out/bin/
-    ln -s $out/lib/emacs/29.0.50/native-lisp $out/Applications/Emacs.app/Contents
+    ln -s $out/lib/emacs/30.0.50/native-lisp $out/Applications/Emacs.app/Contents
     substituteInPlace $out/site-lisp/site-start.el --replace         "(setq w08r-site-dir nil"         "(setq w08r-site-dir \"$out\""
     substituteInPlace $out/site-lisp/site-start.el --replace         "(setq native-comp-driver-options nil"         "(setq native-comp-driver-options '(${gccjitOpts})"
   '';
