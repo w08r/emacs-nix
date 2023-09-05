@@ -42,11 +42,11 @@ let wev = stdenv.mkDerivation {
 
 wep = stdenv.mkDerivation {
   pname = "w08r-emacs-pdftools";
-  version = "bc2ba11";
+  version = "7ff6293";
 
   src = fetchFromGitHub {
-    sha256 = "sha256-ed/QqTjsx2xRIAhNv63tMYHuqOplPFODmATu/MsX4+w=";
-    rev = "bc2ba117e8c3196ff9adf0da4fa1e63a8da3d7c8";
+    sha256 = "sha256-VyimrkDf6Y2FbgYjMfzVvH0s6ULUfafMMJJ4188EiDE=";
+    rev = "7ff6293a25baaae65651b3e1c54b61208279a7ef";
     repo = "pdf-tools";
     owner = "vedang";
     fetchSubmodules = true;
@@ -84,12 +84,12 @@ wep = stdenv.mkDerivation {
 
 in stdenv.mkDerivation rec {
   pname = "w08r-emacs";
-  version = "7ab6c6ac833";
+  version = "ebac67129e8";
 
   src = fetchFromSavannah {
-    rev = "7ab6c6ac8334f80a2effcb9d66d2c57810c9a73e";
+    rev = "ebac67129e86ce201d88debb1a8c9d6924215e84";
     repo = "emacs";
-    sha256 = "sha256-ir5tFRyrEHyMH2TtpTnYpCpGREojLe32AvvN0sSpeCs=";
+    sha256 = "sha256-Xv3NBkQk+T+GqfJ+SwVSeK1gnRJFlc89Zzuos/6nDtQ=";
   };
 
   sitelisp = fetchurl {
@@ -115,6 +115,7 @@ in stdenv.mkDerivation rec {
     ncurses
     texinfo
     WebKit
+    tree-sitter
     wev
   ];
 
@@ -122,7 +123,7 @@ in stdenv.mkDerivation rec {
   configurePhase = ''
     ./autogen.sh
 
-    CPPFLAGS="-I${macsdk}/usr/include  -isysroot ${macsdk}/ -I${macsdk}//System/Library/Frameworks/AppKit.framework/Versions/C/Headers -I${pkgs.lib.getLib libgccjit}/include"     CFLAGS="-O3 -isysroot ${macsdk}/ -framework AppKit"     CC=/usr/bin/clang     LDFLAGS="-O3 -L ${pkgs.lib.getLib libgccjit}/lib"     ./configure      --disable-silent-rules      --prefix=$out      --enable-locallisppath=$out/site-lisp      --without-dbus      --without-imagemagick      --with-mailutils      --disable-ns-self-contained      --with-cairo      --with-modules      --with-xml2      --with-gnutls      --with-json      --with-rsvg      --with-native-compilation      --with-gnutls=ifavailable      --enable-mac-app=$out/Applications      --with-xwidgets --with-freetype --with-harfbuzz 
+    CPPFLAGS="-I${macsdk}/usr/include  -isysroot ${macsdk}/ -I${macsdk}//System/Library/Frameworks/AppKit.framework/Versions/C/Headers -I${pkgs.lib.getLib libgccjit}/include"     CFLAGS="-O3 -isysroot ${macsdk}/ -framework AppKit"     CC=/usr/bin/clang     LDFLAGS="-O3 -L ${pkgs.lib.getLib libgccjit}/lib"     ./configure      --disable-silent-rules      --prefix=$out      --enable-locallisppath=$out/site-lisp      --without-dbus      --without-imagemagick      --with-mailutils      --disable-ns-self-contained      --with-cairo      --with-modules      --with-xml2      --with-gnutls      --with-json      --with-rsvg      --with-native-compilation      --with-gnutls=ifavailable      --enable-mac-app=$out/Applications      --with-xwidgets --with-tree-sitter
   '';
 
   gccjitOpts =   (lib.concatStringsSep " "
