@@ -143,6 +143,7 @@ in stdenv.mkDerivation rec {
     ncurses
     texinfo
     WebKit
+    tree-sitter
     wev
   ];
 
@@ -171,7 +172,8 @@ in stdenv.mkDerivation rec {
      --with-native-compilation \
      --with-gnutls=ifavailable \
      --enable-mac-app=\$out/Applications \
-     --with-xwidgets
+     --with-xwidgets \
+     --with-tree-sitter
   '';
 
   gccjitOpts =   (lib.concatStringsSep " "
