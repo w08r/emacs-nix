@@ -26,3 +26,6 @@
 
 ;; library path for gccjit
 (setq native-comp-driver-options nil)
+
+(setq w08r-grip-dir nil)
+(setq w08r-nix-gnutls-dir nil)

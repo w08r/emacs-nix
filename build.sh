@@ -147,7 +147,7 @@ in stdenv.mkDerivation rec {
     wev
   ];
 
-  macsdk = "/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk";
+  macsdk = "/Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk";
   configurePhase = ''
     ./autogen.sh
 
