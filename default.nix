@@ -3,11 +3,11 @@ with darwin.apple_sdk.frameworks;
 
 let wev = stdenv.mkDerivation {
   pname = "w08r-emacs-libvterm";
-  version = "94e2b0b";
+  version = "9882793";
 
   src = fetchFromGitHub {
-    sha256 = "sha256-1+AbPtyl1dS73WTMrIUduyWeM4cOiD3CI7d0Ic3jpVw=";
-    rev = "94e2b0b2b4a750e7907dacd5b4c0584900846dd1";
+    sha256 = "sha256-W/UGA3/ecu1fd7u5pYTlRqcULF3EgCVnWQGQYX93YOI=";
+    rev = "988279316fc89e6d78947b48513f248597ba969a";
     repo = "emacs-libvterm";
     owner = "akermu";
     fetchSubmodules = true;
@@ -42,11 +42,11 @@ let wev = stdenv.mkDerivation {
 
 wep = stdenv.mkDerivation {
   pname = "w08r-emacs-pdftools";
-  version = "c69e765";
+  version = "30b5054";
 
   src = fetchFromGitHub {
-    sha256 = "sha256-6u+uP865v6hMR9Q/ZiEidJrPkP8mnjPGex9lQCOvgQo=";
-    rev = "c69e7656a4678fe25afbd29f3503dd19ee7f9896";
+    sha256 = "sha256-/UH3KcuZf9p7MA0ZzhqAgTv6LjKnBXHfJUOdIxV6KbI=";
+    rev = "30b50544e55b8dbf683c2d932d5c33ac73323a16";
     repo = "pdf-tools";
     owner = "vedang";
     fetchSubmodules = true;
@@ -84,25 +84,24 @@ wep = stdenv.mkDerivation {
 
 in stdenv.mkDerivation rec {
   pname = "w08r-emacs";
-  version = "7c6e44e5ccb";
+  version = "200c877cd48";
 
   src = fetchFromSavannah {
-    rev = "7c6e44e5ccb009a63da30fbc468c924dd383b521";
+    rev = "200c877cd48aa0f7638fdd5157555374f0f7bfc8";
     repo = "emacs";
-    sha256 = "sha256-UHiJaF2sFJ6N1D0l6JeB7wOFaTwFCV7+qtb+X1CPXos=";
+    sha256 = "sha256-OX7zU9lC2mMW1WHIHwYXCn6O234TMOKh6AnbgfAlNBk=";
   };
 
-  sitelisp = ./site-start.el;
-
-  #   fetchurl {
-  #   url = "https://raw.githubusercontent.com/will08rien/emacs-nix/main/site-start.el";
-  #   sha256 = "33117a61c0cae3388a1dac524580f19c1f65539e3313f51b293efce988964a0c";
-  # };
+  sitelisp = fetchurl {
+    url = "https://raw.githubusercontent.com/will08rien/emacs-nix/main/site-start.el";
+    sha256 = "sha256-bNSkJHdSfGnl3tQqPT6tVOmZz7VqeTiej/LFDwjHwEA=";
+  };
 
   buildInputs = [
     curl
     gettext
     libjpeg
+    sqlite
     giflib
     libtiff
     librsvg
@@ -117,15 +116,16 @@ in stdenv.mkDerivation rec {
     ncurses
     texinfo
     WebKit
+    gnutls
     tree-sitter
     wev
   ];
 
-  macsdk = "/Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk";
+  macsdk = "/Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk";
   configurePhase = ''
     ./autogen.sh
 
-    CPPFLAGS="-I${macsdk}/usr/include  -isysroot ${macsdk}/ -I${macsdk}//System/Library/Frameworks/AppKit.framework/Versions/C/Headers -I${pkgs.lib.getLib libgccjit}/include"     CFLAGS="-O3 -isysroot ${macsdk}/ -framework AppKit"     CC=/usr/bin/clang     LDFLAGS="-O3 -L ${pkgs.lib.getLib libgccjit}/lib"     ./configure      --disable-silent-rules      --prefix=$out      --enable-locallisppath=$out/site-lisp      --without-dbus      --without-imagemagick      --with-mailutils      --disable-ns-self-contained      --with-cairo      --with-modules      --with-xml2      --with-gnutls      --with-json      --with-rsvg      --with-native-compilation      --with-gnutls=ifavailable      --enable-mac-app=$out/Applications      --with-xwidgets      --with-tree-sitter
+    CPPFLAGS="-I${macsdk}/usr/include  -isysroot ${macsdk}/ -I${macsdk}//System/Library/Frameworks/AppKit.framework/Versions/C/Headers -I${pkgs.lib.getLib libgccjit}/include"     CFLAGS="-O3 -isysroot ${macsdk}/ -framework AppKit"     CC=/usr/bin/clang     LDFLAGS="-O3 -L ${pkgs.lib.getLib libgccjit}/lib"     ./configure      --disable-silent-rules      --prefix=$out      --enable-locallisppath=$out/site-lisp      --without-dbus      --without-imagemagick      --with-mailutils      --disable-ns-self-contained      --with-cairo      --with-modules      --with-xml2      --with-gnutls      --with-json      --with-rsvg      --with-native-compilation      --with-gnutls=ifavailable      --enable-mac-app=$out/Applications      --with-xwidgets      --with-tree-sitter --with-sqlite
   '';
 
   gccjitOpts =   (lib.concatStringsSep " "
@@ -159,9 +159,7 @@ in stdenv.mkDerivation rec {
     cp $sitelisp $out/site-lisp/site-start.el
     cp ${lib.getLib wev}/lib/* $out/site-lisp/
     cp ${lib.getLib wep}/bin/* $out/bin/
-    substituteInPlace $out/site-lisp/site-start.el --replace         "(setq w08r-grip-dir nil"         "(setq w08r-grip-dir \"${lib.getBin python311Packages.grip}\""
-    substituteInPlace $out/site-lisp/site-start.el --replace         "(setq w08r-nix-gnutls-dir nil"         "(setq w08r-nix-gnutls-dir \"${lib.getBin gnutls}\""
-    ln -s $out/lib/emacs/30.0.50/native-lisp $out/Applications/Emacs.app/Contents
+    ln -s $out/lib/emacs/31.0.50/native-lisp $out/Applications/Emacs.app/Contents
     substituteInPlace $out/site-lisp/site-start.el --replace         "(setq w08r-site-dir nil"         "(setq w08r-site-dir \"$out\""
     substituteInPlace $out/site-lisp/site-start.el --replace         "(setq native-comp-driver-options nil"         "(setq native-comp-driver-options '(${gccjitOpts})"
   '';
