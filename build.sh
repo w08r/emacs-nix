@@ -122,7 +122,7 @@ in stdenv.mkDerivation rec {
 
   sitelisp = fetchurl {
     url = "https://raw.githubusercontent.com/will08rien/emacs-nix/main/site-start.el";
-    sha256 = "33117a61c0cae3388a1dac524580f19c1f65539e3313f51b293efce988964a0c";
+    sha256 = "sha256-bNSkJHdSfGnl3tQqPT6tVOmZz7VqeTiej/LFDwjHwEA=";
   };
 
   buildInputs = [
@@ -132,6 +132,8 @@ in stdenv.mkDerivation rec {
     giflib
     libtiff
     librsvg
+    gnutls
+    sqlite
     git
     autoconf
     openssl
@@ -147,7 +149,7 @@ in stdenv.mkDerivation rec {
     wev
   ];
 
-  macsdk = "/Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk";
+  macsdk = "/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk";
   configurePhase = ''
     ./autogen.sh
 
@@ -168,12 +170,13 @@ in stdenv.mkDerivation rec {
      --with-xml2 \
      --with-gnutls \
      --with-json \
-     --with-rsvg \
+     --with-librsvg \
      --with-native-compilation \
      --with-gnutls=ifavailable \
      --enable-mac-app=\$out/Applications \
      --with-xwidgets \
-     --with-tree-sitter
+     --with-tree-sitter \
+     --with-sqlite
   '';
 
   gccjitOpts =   (lib.concatStringsSep " "
@@ -207,7 +210,7 @@ in stdenv.mkDerivation rec {
     cp \$sitelisp \$out/site-lisp/site-start.el
     cp \${lib.getLib wev}/lib/* \$out/site-lisp/
     cp \${lib.getLib wep}/bin/* \$out/bin/
-    ln -s \$out/lib/emacs/30.0.50/native-lisp \$out/Applications/Emacs.app/Contents
+    ln -s \$out/lib/emacs/31.0.50/native-lisp \$out/Applications/Emacs.app/Contents
     substituteInPlace \$out/site-lisp/site-start.el --replace \
         "(setq w08r-site-dir nil" \
         "(setq w08r-site-dir \"\$out\""

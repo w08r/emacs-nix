@@ -3,11 +3,11 @@ with darwin.apple_sdk.frameworks;
 
 let wev = stdenv.mkDerivation {
   pname = "w08r-emacs-libvterm";
-  version = "9882793";
+  version = "056ad74";
 
   src = fetchFromGitHub {
-    sha256 = "sha256-W/UGA3/ecu1fd7u5pYTlRqcULF3EgCVnWQGQYX93YOI=";
-    rev = "988279316fc89e6d78947b48513f248597ba969a";
+    sha256 = "sha256-ZBAQOUr+IrDlXUKpG2HUzNjVfGdphXqrmiPn90bvAVY=";
+    rev = "056ad74653704bc353d8ec8ab52ac75267b7d373";
     repo = "emacs-libvterm";
     owner = "akermu";
     fetchSubmodules = true;
@@ -84,13 +84,15 @@ wep = stdenv.mkDerivation {
 
 in stdenv.mkDerivation rec {
   pname = "w08r-emacs";
-  version = "200c877cd48";
+  version = "ea04dd8ca93";
 
   src = fetchFromSavannah {
-    rev = "200c877cd48aa0f7638fdd5157555374f0f7bfc8";
+    rev = "ea04dd8ca93d609c0ee475c4acf58a56dfc0f1f3";
     repo = "emacs";
-    sha256 = "sha256-OX7zU9lC2mMW1WHIHwYXCn6O234TMOKh6AnbgfAlNBk=";
+    sha256 = "sha256-7Rc6Vliva9o8aJDKkeSlLLMemN0ydsgpTLHWpzIvuDo=";
   };
+
+  patches = [ ./0001-Support-coloured-stipples-on-Cocoa-NS.patch ];
 
   sitelisp = fetchurl {
     url = "https://raw.githubusercontent.com/will08rien/emacs-nix/main/site-start.el";
@@ -99,12 +101,14 @@ in stdenv.mkDerivation rec {
 
   buildInputs = [
     curl
+    cairo
     gettext
     libjpeg
-    sqlite
     giflib
     libtiff
     librsvg
+    gnutls
+    sqlite
     git
     autoconf
     openssl
@@ -116,16 +120,15 @@ in stdenv.mkDerivation rec {
     ncurses
     texinfo
     WebKit
-    gnutls
     tree-sitter
     wev
   ];
 
-  macsdk = "/Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk";
+  macsdk = "/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk";
   configurePhase = ''
     ./autogen.sh
 
-    CPPFLAGS="-I${macsdk}/usr/include  -isysroot ${macsdk}/ -I${macsdk}//System/Library/Frameworks/AppKit.framework/Versions/C/Headers -I${pkgs.lib.getLib libgccjit}/include"     CFLAGS="-O3 -isysroot ${macsdk}/ -framework AppKit"     CC=/usr/bin/clang     LDFLAGS="-O3 -L ${pkgs.lib.getLib libgccjit}/lib"     ./configure      --disable-silent-rules      --prefix=$out      --enable-locallisppath=$out/site-lisp      --without-dbus      --without-imagemagick      --with-mailutils      --disable-ns-self-contained      --with-cairo      --with-modules      --with-xml2      --with-gnutls      --with-json      --with-librsvg      --with-native-compilation      --with-gnutls=ifavailable      --enable-mac-app=$out/Applications      --with-xwidgets      --with-tree-sitter --with-sqlite
+    CPPFLAGS="-I${macsdk}/usr/include  -isysroot ${macsdk}/ -I${macsdk}//System/Library/Frameworks/AppKit.framework/Versions/C/Headers -I${pkgs.lib.getLib libgccjit}/include"     CFLAGS="-DNS_IMPL_COCOA -O3 -isysroot ${macsdk}/ -framework AppKit"     CC=/usr/bin/clang     LDFLAGS="-O3 -L ${pkgs.lib.getLib libgccjit}/lib"     ./configure      --disable-silent-rules      --prefix=$out      --enable-locallisppath=$out/site-lisp      --without-dbus      --without-imagemagick      --with-mailutils      --disable-ns-self-contained      --with-cairo      --with-modules      --with-xml2      --with-gnutls      --with-json      --with-librsvg      --with-native-compilation      --with-gnutls=ifavailable      --enable-mac-app=$out/Applications      --with-xwidgets      --with-tree-sitter      --with-sqlite
   '';
 
   gccjitOpts =   (lib.concatStringsSep " "
