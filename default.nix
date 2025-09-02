@@ -1,5 +1,4 @@
 with import <nixpkgs> {};
-with darwin.apple_sdk.frameworks;
 
 let wev = stdenv.mkDerivation {
   pname = "w08r-emacs-libvterm";
@@ -13,7 +12,8 @@ let wev = stdenv.mkDerivation {
     fetchSubmodules = true;
   };
 
-  buildInputs = [
+  nativeBuildInputs = [
+    apple-sdk
     cmake
     cacert
     perl
@@ -52,7 +52,8 @@ wep = stdenv.mkDerivation {
     fetchSubmodules = true;
   };
 
-  buildInputs = [
+  nativeBuildInputs = [
+    apple-sdk
     cmake
     poppler
     libpng
@@ -84,24 +85,22 @@ wep = stdenv.mkDerivation {
 
 in stdenv.mkDerivation rec {
   pname = "w08r-emacs";
-  version = "ea04dd8ca93";
+  version = "66ef930ebea";
 
   src = fetchFromSavannah {
-    rev = "ea04dd8ca93d609c0ee475c4acf58a56dfc0f1f3";
+    rev = "66ef930ebea4618c1dac71a09495766476ced1d6";
     repo = "emacs";
-    sha256 = "sha256-7Rc6Vliva9o8aJDKkeSlLLMemN0ydsgpTLHWpzIvuDo=";
+    sha256 = "sha256-MyGfTN/q1GmgRRhFh7FX+pPbmh/xtCNbEikHJNtv7U8=";
   };
-
-  patches = [ ./0001-Support-coloured-stipples-on-Cocoa-NS.patch ];
 
   sitelisp = fetchurl {
     url = "https://raw.githubusercontent.com/will08rien/emacs-nix/main/site-start.el";
-    sha256 = "sha256-bNSkJHdSfGnl3tQqPT6tVOmZz7VqeTiej/LFDwjHwEA=";
+    sha256 = "sha256-x3EmNaX2ec3jBK4BK/bS0i8V4rU4e4Mp+rHrm4Jd5TQ=";
   };
 
-  buildInputs = [
+  nativeBuildInputs = [
+    apple-sdk
     curl
-    cairo
     gettext
     libjpeg
     giflib
@@ -115,33 +114,36 @@ in stdenv.mkDerivation rec {
     libgccjit
     jansson
     pkg-config
-    AppKit
     zlib
     ncurses
     texinfo
-    WebKit
     tree-sitter
     wev
   ];
 
-  macsdk = "/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk";
+  macsdk = "/Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk";
   configurePhase = ''
-    ./autogen.sh
+    ./autogen.sh;
 
-    CPPFLAGS="-I${macsdk}/usr/include  -isysroot ${macsdk}/ -I${macsdk}//System/Library/Frameworks/AppKit.framework/Versions/C/Headers -I${pkgs.lib.getLib libgccjit}/include"     CFLAGS="-DNS_IMPL_COCOA -O3 -isysroot ${macsdk}/ -framework AppKit"     CC=/usr/bin/clang     LDFLAGS="-O3 -L ${pkgs.lib.getLib libgccjit}/lib"     ./configure      --disable-silent-rules      --prefix=$out      --enable-locallisppath=$out/site-lisp      --without-dbus      --without-imagemagick      --with-mailutils      --disable-ns-self-contained      --with-cairo      --with-modules      --with-xml2      --with-gnutls      --with-json      --with-librsvg      --with-native-compilation      --with-gnutls=ifavailable      --enable-mac-app=$out/Applications      --with-xwidgets      --with-tree-sitter      --with-sqlite
+     LIBRARY_PATH="" CPPFLAGS="-I${macsdk}/usr/include  -isysroot ${macsdk}/ -I${macsdk}//System/Library/Frameworks/AppKit.framework/Versions/C/Headers -I${pkgs.lib.getLib libgccjit}/include"     CFLAGS="-O3 -isysroot ${macsdk}/ -framework AppKit"     CC=/usr/bin/clang     LDFLAGS="-O3"     ./configure      --disable-silent-rules      --prefix=$out      --enable-locallisppath=$out/site-lisp      --without-dbus      --without-imagemagick      --with-mailutils      --disable-ns-self-contained      --with-cairo      --with-modules      --with-xml2      --with-gnutls      --with-json      --with-librsvg      --with-native-compilation      --with-gnutls=ifavailable      --enable-mac-app=$out/Applications      --with-xwidgets      --with-tree-sitter      --with-sqlite
   '';
+
+  env = {
+    LIBRARY_PATH = "";
+  };
 
   gccjitOpts =   (lib.concatStringsSep " "
         (builtins.map (x: ''\"-B${x}\"'') [
           # Paths necessary so the JIT compiler finds its libraries:
-          "${lib.getLib libgccjit}/lib"
-          "${lib.getLib libgccjit}/lib/gcc"
-          "${lib.getLib stdenv.cc.libc}/lib"
+          # "${lib.getLib libgccjit}/lib"
+          "${lib.getLib libgccjit}/lib/gcc/arm64-apple-darwin/14.3.0/"
+          "/Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/lib/"
+          # "${lib.getLib stdenv.cc.libc}/lib"
 
           # Executable paths necessary for compilation (ld, as):
-          "${lib.getBin stdenv.cc.cc}/bin"
-          "${lib.getBin stdenv.cc.bintools}/bin"
-          "${lib.getBin stdenv.cc.bintools.bintools}/bin"
+          # "${lib.getBin stdenv.cc.cc}/bin"
+          # "${lib.getBin stdenv.cc.bintools}/bin"
+          # "${lib.getBin stdenv.cc.bintools.bintools}/bin"
         ]));
         
   buildPhase = ''
@@ -165,5 +167,32 @@ in stdenv.mkDerivation rec {
     ln -s $out/lib/emacs/31.0.50/native-lisp $out/Applications/Emacs.app/Contents
     substituteInPlace $out/site-lisp/site-start.el --replace         "(setq w08r-site-dir nil"         "(setq w08r-site-dir \"$out\""
     substituteInPlace $out/site-lisp/site-start.el --replace         "(setq native-comp-driver-options nil"         "(setq native-comp-driver-options '(${gccjitOpts})"
+    cat >> $out/site-lisp/site-start.el <<EOF
+    (add-to-list 'exec-path "${antigen.out}/bin")
+    (add-to-list 'exec-path "${aspell.out}/bin")
+    (add-to-list 'exec-path "${atuin.out}/bin")
+    (add-to-list 'exec-path "${awscli2.out}/bin")
+    (add-to-list 'exec-path "${colima.out}/bin")
+    (add-to-list 'exec-path "${coreutils.out}/bin")
+    (add-to-list 'exec-path "${devcontainer.out}/bin")
+    (add-to-list 'exec-path "${direnv.out}/bin")
+    (add-to-list 'exec-path "${docker.out}/bin")
+    (add-to-list 'exec-path "${duckdb.out}/bin")
+    (add-to-list 'exec-path "${eza.out}/bin")
+    (add-to-list 'exec-path "${fd.out}/bin")
+    (add-to-list 'exec-path "${ffmpeg.out}/bin")
+    (add-to-list 'exec-path "${gnupg.out}/bin")
+    (add-to-list 'exec-path "${ipcalc.out}/bin")
+    (add-to-list 'exec-path "${karabiner-elements.out}/bin")
+    (add-to-list 'exec-path "${kubectl.out}/bin")
+    (add-to-list 'exec-path "${ollama.out}/bin")
+    (add-to-list 'exec-path "${ripgrep.out}/bin")
+    (add-to-list 'exec-path "${starship.out}/bin")
+    (add-to-list 'exec-path "${tokei.out}/bin")
+    (add-to-list 'exec-path "${zoxide.out}/bin")
+    (add-to-list 'exec-path "${zsh.out}/bin")
+
+    (setq w08r-uk-dict-list '("${aspellDicts.en.out}" "${aspellDicts.uk.out}"))
+    EOF
   '';
 }

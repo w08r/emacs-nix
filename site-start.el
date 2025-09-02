@@ -1,3 +1,4 @@
+;; site-start.el --- directory-browsing commands -*- lexical-binding: t -*-
 ;; couple o' simple checks from
 ;; https://masteringemacs.com/article/speed-up-emacs-libjansson-native-elisp-compilation
 (defun wob/check-perf ()

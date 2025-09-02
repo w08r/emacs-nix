@@ -27,7 +27,6 @@ PDF=$(l pdf-tools)
 
 cat >default.nix <<EOF
 with import <nixpkgs> {};
-with darwin.apple_sdk.frameworks;
 
 let wev = stdenv.mkDerivation {
   pname = "w08r-emacs-libvterm";
@@ -41,7 +40,8 @@ let wev = stdenv.mkDerivation {
     fetchSubmodules = true;
   };
 
-  buildInputs = [
+  nativeBuildInputs = [
+    apple-sdk
     cmake
     cacert
     perl
@@ -80,7 +80,8 @@ wep = stdenv.mkDerivation {
     fetchSubmodules = true;
   };
 
-  buildInputs = [
+  nativeBuildInputs = [
+    apple-sdk
     cmake
     poppler
     libpng
@@ -125,7 +126,8 @@ in stdenv.mkDerivation rec {
     sha256 = "sha256-bNSkJHdSfGnl3tQqPT6tVOmZz7VqeTiej/LFDwjHwEA=";
   };
 
-  buildInputs = [
+  nativeBuildInputs = [
+    apple-sdk
     curl
     gettext
     libjpeg
@@ -140,23 +142,22 @@ in stdenv.mkDerivation rec {
     libgccjit
     jansson
     pkg-config
-    AppKit
     zlib
     ncurses
     texinfo
-    WebKit
     tree-sitter
     wev
   ];
 
-  macsdk = "/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk";
+  macsdk = "/Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk";
   configurePhase = ''
-    ./autogen.sh
+    ./autogen.sh;
 
+    LIBRARY_PATH="" \
     CPPFLAGS="-I\${macsdk}/usr/include  -isysroot \${macsdk}/ -I\${macsdk}//System/Library/Frameworks/AppKit.framework/Versions/C/Headers -I\${pkgs.lib.getLib libgccjit}/include" \
     CFLAGS="-O3 -isysroot \${macsdk}/ -framework AppKit" \
     CC=/usr/bin/clang \
-    LDFLAGS="-O3 -L \${pkgs.lib.getLib libgccjit}/lib" \
+    LDFLAGS="-O3" \
     ./configure \
      --disable-silent-rules \
      --prefix=\$out \
@@ -179,17 +180,15 @@ in stdenv.mkDerivation rec {
      --with-sqlite
   '';
 
+   env = {
+     LIBRARY_PATH = "";
+   };
+
   gccjitOpts =   (lib.concatStringsSep " "
         (builtins.map (x: ''\"-B\${x}\"'') [
           # Paths necessary so the JIT compiler finds its libraries:
-          "\${lib.getLib libgccjit}/lib"
-          "\${lib.getLib libgccjit}/lib/gcc"
-          "\${lib.getLib stdenv.cc.libc}/lib"
-
-          # Executable paths necessary for compilation (ld, as):
-          "\${lib.getBin stdenv.cc.cc}/bin"
-          "\${lib.getBin stdenv.cc.bintools}/bin"
-          "\${lib.getBin stdenv.cc.bintools.bintools}/bin"
+          "\${lib.getLib libgccjit}/lib/gcc/arm64-apple-darwin/14.3.0/"
+          "\${macsdk}/usr/lib/"
         ]));
         
   buildPhase = ''
@@ -217,6 +216,33 @@ in stdenv.mkDerivation rec {
     substituteInPlace \$out/site-lisp/site-start.el --replace \
         "(setq native-comp-driver-options nil" \
         "(setq native-comp-driver-options '(\${gccjitOpts})"
+    cat >> \$out/site-lisp/site-start.el <<EOF2
+    (add-to-list 'exec-path "\${antigen.out}/bin")
+    (add-to-list 'exec-path "\${aspell.out}/bin")
+    (add-to-list 'exec-path "\${atuin.out}/bin")
+    (add-to-list 'exec-path "\${awscli2.out}/bin")
+    (add-to-list 'exec-path "\${colima.out}/bin")
+    (add-to-list 'exec-path "\${coreutils.out}/bin")
+    (add-to-list 'exec-path "\${devcontainer.out}/bin")
+    (add-to-list 'exec-path "\${direnv.out}/bin")
+    (add-to-list 'exec-path "\${docker.out}/bin")
+    (add-to-list 'exec-path "\${duckdb.out}/bin")
+    (add-to-list 'exec-path "\${eza.out}/bin")
+    (add-to-list 'exec-path "\${fd.out}/bin")
+    (add-to-list 'exec-path "\${ffmpeg.out}/bin")
+    (add-to-list 'exec-path "\${gnupg.out}/bin")
+    (add-to-list 'exec-path "\${ipcalc.out}/bin")
+    (add-to-list 'exec-path "\${karabiner-elements.out}/bin")
+    (add-to-list 'exec-path "\${kubectl.out}/bin")
+    (add-to-list 'exec-path "\${ollama.out}/bin")
+    (add-to-list 'exec-path "\${ripgrep.out}/bin")
+    (add-to-list 'exec-path "\${starship.out}/bin")
+    (add-to-list 'exec-path "\${tokei.out}/bin")
+    (add-to-list 'exec-path "\${zoxide.out}/bin")
+    (add-to-list 'exec-path "\${zsh.out}/bin")
+
+    (setq w08r-uk-dict-list '("\${aspellDicts.en.out}" "\${aspellDicts.uk.out}"))
+    EOF2
   '';
 }
 EOF
